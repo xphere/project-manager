@@ -1,0 +1,4 @@
+# Configuration for dnsmasq
+# Redirects to localhost every dns request in the form *.devel
+# Put this file inside /etc/dnsmasq.d/ and restart dnsmasq
+address=/.devel/127.0.0.1
