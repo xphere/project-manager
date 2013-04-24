@@ -1,0 +1,17 @@
+{
+    "name": "berny/project-manager",
+    "description": "Allows easy management of multiple local vhosts projects for development purposes.",
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "Berny Cantos",
+            "email": "be@rny.cc"
+        }
+    ],
+    "autoload": {
+        "psr-0": { "": "src/" }
+    },
+    "require": {
+        "symfony/console": "v2.2.0"
+    }
+}
