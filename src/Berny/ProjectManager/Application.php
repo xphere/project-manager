@@ -25,7 +25,8 @@ class Application extends BaseApplication
         parent::__construct(static::NAME, static::VERSION);
 
         $this->addCommands(array(
-            new Command\AddProjectCommand($path),
+          new Command\AddProjectCommand($path),
+          new Command\EnableProjectCommand($path),
         ));
     }
 }

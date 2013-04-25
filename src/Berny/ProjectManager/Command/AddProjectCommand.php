@@ -67,7 +67,7 @@ class AddProjectCommand extends Command
             }
         }
 
-        /** TODO: Add project to project-list */
+        symlink(realpath($projectPath), "{$this->installedPath}/projects/{$projectName}");
 
         $output->writeln("Project <info>{$projectName}</info> added successfully.");
     }
