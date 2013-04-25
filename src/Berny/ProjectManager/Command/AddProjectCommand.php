@@ -97,11 +97,12 @@ class AddProjectCommand extends Command
         $projectName = $input->getArgument('project-name');
         if (empty($projectName)) {
             $defaultName = basename($projectPath);
+            $installedPath = $this->installedPath;
             $projectName = $this->getHelper('dialog')->askAndValidate(
                 $output,
                 '<info>Please enter the alias of the project:</info> [' . $defaultName . '] ',
-                function ($answer) {
-                    if (file_exists($this->installedPath . '/projects/' . $answer . '.project')) {
+                function ($answer) use ($installedPath) {
+                    if (file_exists($installedPath . '/projects/' . $answer . '.project')) {
                         throw new \InvalidArgumentException('A project named "' . $answer . '" already exists');
                     }
                     return $answer;
