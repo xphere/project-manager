@@ -22,10 +22,10 @@ class Application extends BaseApplication
 
     public function __construct($path)
     {
+        parent::__construct(static::NAME, static::VERSION);
+
         $this->addCommands(array(
             new Command\AddProjectCommand($path),
         ));
-
-        parent::__construct(static::NAME, static::VERSION);
     }
 }
