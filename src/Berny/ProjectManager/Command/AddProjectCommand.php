@@ -82,12 +82,7 @@ class AddProjectCommand extends Command
             $projectPath = $this->getHelper('dialog')->askAndValidate(
                 $output,
                 '<info>Please enter the path of the project public directory:</info> [' . $defaultPath . '] ',
-                function ($answer) {
-                    if (!is_dir($answer)) {
-                        throw new \InvalidArgumentException('The directory does not exist');
-                    }
-                    return $answer;
-                },
+                array($this, 'validatePath'),
                 false,
                 $defaultPath
             );
@@ -101,16 +96,27 @@ class AddProjectCommand extends Command
             $projectName = $this->getHelper('dialog')->askAndValidate(
                 $output,
                 '<info>Please enter the alias of the project:</info> [' . $defaultName . '] ',
-                function ($answer) use ($installedPath) {
-                    if (file_exists($installedPath . '/projects/' . $answer . '.project')) {
-                        throw new \InvalidArgumentException('A project named "' . $answer . '" already exists');
-                    }
-                    return $answer;
-                },
+                array($this, 'validateName'),
                 false,
                 $defaultName
             );
             $input->setArgument('project-name', $projectName);
         }
+    }
+
+    public function validateName($projectName)
+    {
+        if (file_exists("{$this->projectManager}/projects/{$projectName}.project")) {
+          throw new \InvalidArgumentException("A project named '{$projectName}' already exists");
+        }
+        return $projectName;
+    }
+
+    public function validatePath($projectPath)
+    {
+        if (!is_dir($projectPath)) {
+          throw new \InvalidArgumentException("The project path '{$projectPath}' does not exist");
+        }
+        return $projectPath;
     }
 }
