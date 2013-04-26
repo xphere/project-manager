@@ -6,6 +6,10 @@ Host multiple projects in your localhost and access them with urls like `http://
 Installation
 ------------
 
+********
+**NOTE** This project is under heavy redesign, porting from bash to php
+********
+
 1. Move the content of this project to /var/www
 2. Copy `config/devel.vhost` to your apache sites directory, often `/etc/apache2/sites-available/`
 3. Copy `config/devel.tld` to your dnsmasq config directory, usually `/etc/dnsmasq.d/`
