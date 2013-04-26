@@ -11,6 +11,7 @@
 
 namespace Berny\ProjectManager;
 
+use Berny\ProjectManager\Manager\ProjectManager;
 use Symfony\Component\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,13 +21,15 @@ class Application extends BaseApplication
     const NAME    = 'Project Manager Application';
     const VERSION = '0.1';
 
-    public function __construct($path)
+    private $projectManager;
+
+    public function __construct($projectManager)
     {
         parent::__construct(static::NAME, static::VERSION);
 
         $this->addCommands(array(
-          new Command\AddProjectCommand($path),
-          new Command\EnableProjectCommand($path),
+          new Command\AddProjectCommand($projectManager),
+          new Command\EnableProjectCommand($projectManager),
         ));
     }
 }

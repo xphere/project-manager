@@ -9,9 +9,12 @@
  * file that was distributed with this source code.
  */
 
-require_once __DIR__ . '/../vendor/autoload.php';
+namespace Berny\ProjectManager;
 
-$path = dirname(__DIR__);
-$manager = new \Berny\ProjectManager\Manager\ProjectManager($path);
-$application = new \Berny\ProjectManager\Application($manager);
-$application->run();
+interface ProjectInterface
+{
+    function name();
+    function path();
+    function rename($name);
+    function move($path);
+}

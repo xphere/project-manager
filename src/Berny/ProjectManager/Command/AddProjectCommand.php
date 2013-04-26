@@ -18,11 +18,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class AddProjectCommand extends Command
 {
-    protected $installedPath;
+    protected $projectManager;
 
-    public function __construct($installedPath)
+    public function __construct($projectManager)
     {
-        $this->installedPath = $installedPath;
+        $this->projectManager = $projectManager;
         parent::__construct();
     }
 
@@ -58,16 +58,17 @@ class AddProjectCommand extends Command
                 $output->writeln('<error>Command aborted</error>');
                 return 1;
             }
-        } else {
-            if (!is_dir($projectPath)) {
-                throw new \InvalidArgumentException("The project path '{$projectPath}' does not exist");
-            }
-            if (file_exists("{$this->installedPath}/projects/{$projectName}.project")) {
-                throw new \InvalidArgumentException("A project named '{$projectName}' already exists");
-            }
         }
 
-        symlink(realpath($projectPath), "{$this->installedPath}/projects/{$projectName}");
+        try {
+            $projectManager = $this->projectManager;
+            $project = $projectManager->getProject($projectName);
+            $project->setPath($projectPath);
+            $project->save();
+
+        } catch (\Exception $e) {
+
+        }
 
         $output->writeln("Project <info>{$projectName}</info> added successfully.");
     }
@@ -92,7 +93,7 @@ class AddProjectCommand extends Command
         $projectName = $input->getArgument('project-name');
         if (empty($projectName)) {
             $defaultName = basename($projectPath);
-            $installedPath = $this->installedPath;
+            $installedPath = $this->projectManager;
             $projectName = $this->getHelper('dialog')->askAndValidate(
                 $output,
                 '<info>Please enter the alias of the project:</info> [' . $defaultName . '] ',

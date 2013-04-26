@@ -18,12 +18,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class EnableProjectCommand extends Command
 {
-    protected $installedPath;
+    protected $projectManager;
 
-    public function __construct($installedPath)
+    public function __construct($projectManager)
     {
-        $this->installedPath = $installedPath;
-        parent::__construct();
+      $this->projectManager = $projectManager;
+      parent::__construct();
     }
 
     protected function configure()
@@ -47,12 +47,13 @@ class EnableProjectCommand extends Command
         $projectName = $input->getArgument('project-name');
 
         if (!$input->isInteractive()) {
+            $this->getApplication();
             if (!file_exists("{$this->installedPath}/projects/{$projectName}.project")) {
                 throw new \InvalidArgumentException("Project unknown: {$projectName}");
             }
         }
 
-        symlink("{$this->installedPath}/public/{$projectName}.devel", "../projects/{$projectName}.project");
+//        symlink("{$this->installedPath}/public/{$projectName}.devel", "../projects/{$projectName}.project");
 
         $output->writeln("Project <info>{$projectName}</info> enabled successfully.");
     }
