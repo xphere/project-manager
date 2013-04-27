@@ -12,6 +12,6 @@
         "psr-0": { "": "src/" }
     },
     "require": {
-        "symfony/console": "v2.2.0"
+        "symfony/console": ">=2.0"
     }
 }
