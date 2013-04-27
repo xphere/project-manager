@@ -11,21 +11,12 @@
 
 namespace Berny\ProjectManager\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AddProjectCommand extends Command
+class AddProjectCommand extends AbstractProjectCommand
 {
-    protected $projectManager;
-
-    public function __construct($projectManager)
-    {
-        $this->projectManager = $projectManager;
-        parent::__construct();
-    }
-
     protected function configure()
     {
         $this
@@ -52,24 +43,15 @@ class AddProjectCommand extends Command
         $projectName = $input->getArgument('project-name');
         $projectPath = $input->getArgument('project-path');
 
-        if ($input->isInteractive()) {
-            $dialog = $this->getHelper('dialog');
-            if (!$dialog->askConfirmation($output, '<info>Do you confirm generation?</info> (Y/n) ', true)) {
-                $output->writeln('<error>Command aborted</error>');
-                return 1;
-            }
+        if (!$input->isInteractive()) {
+            $projectName = $this->validateName($projectName);
+            $projectPath = $this->validatePath($projectPath);
+
+        } else if (!$this->getHelper('dialog')->askConfirmation($output, '<info>Do you confirm generation?</info> <comment>(Y/n)</comment> ')) {
+            throw new \RuntimeException('Command aborted');
         }
 
-        try {
-            $projectManager = $this->projectManager;
-            $project = $projectManager->getProject($projectName);
-            $project->setPath($projectPath);
-            $project->save();
-
-        } catch (\Exception $e) {
-
-        }
-
+        $this->getProjectManager()->createProject($projectName, $projectPath);
         $output->writeln("Project <info>{$projectName}</info> added successfully.");
     }
 
@@ -82,12 +64,14 @@ class AddProjectCommand extends Command
             $defaultPath = getcwd();
             $projectPath = $this->getHelper('dialog')->askAndValidate(
                 $output,
-                '<info>Please enter the path of the project public directory:</info> [' . $defaultPath . '] ',
+                '<info>Please enter the path of the project public directory:</info> <comment>[' . $defaultPath . ']</comment> ',
                 array($this, 'validatePath'),
                 false,
                 $defaultPath
             );
             $input->setArgument('project-path', $projectPath);
+        } else {
+            $output->writeln("Project path is <info>{$projectPath}</info>");
         }
 
         $projectName = $input->getArgument('project-name');
@@ -96,18 +80,20 @@ class AddProjectCommand extends Command
             $installedPath = $this->projectManager;
             $projectName = $this->getHelper('dialog')->askAndValidate(
                 $output,
-                '<info>Please enter the alias of the project:</info> [' . $defaultName . '] ',
+                '<info>Please enter the alias of the project:</info> <comment>[' . $defaultName . ']</comment> ',
                 array($this, 'validateName'),
                 false,
                 $defaultName
             );
             $input->setArgument('project-name', $projectName);
+        } else {
+            $output->writeln("Project name is <info>{$projectName}</info>");
         }
     }
 
     public function validateName($projectName)
     {
-        if (file_exists("{$this->projectManager}/projects/{$projectName}.project")) {
+        if ($this->getProjectManager()->hasProject($projectName)) {
           throw new \InvalidArgumentException("A project named '{$projectName}' already exists");
         }
         return $projectName;

@@ -13,20 +13,27 @@ namespace Berny\ProjectManager\Manager;
 
 class ProjectManager
 {
-    public function getProject($name)
+    private $path;
+
+    public function __construct($path)
     {
-        if ($this->hasProject($name)) {
-            return new MaterializedProject($name);
-        }
-        return new TemporaryProject($name);
+        $this->path = (string) $path;
     }
 
-    public function hasProject()
+    public function hasProject($projectName)
     {
+        return file_exists($this->getProjectFilename($projectName));
     }
 
-    protected function getPath($name)
+    public function createProject($projectName, $projectPath)
     {
-        return
+        if (@symlink($projectPath, $this->getProjectFilename($projectName)) === false) {
+            throw new \RuntimeException("Can't create project {$projectName} to {$projectPath}");
+        };
+    }
+
+    protected function getProjectFilename($projectName)
+    {
+        return "{$this->path}/projects/{$projectName}.project";
     }
 }
