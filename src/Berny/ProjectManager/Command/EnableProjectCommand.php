@@ -16,16 +16,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class EnableProjectCommand extends Command
+class EnableProjectCommand extends AbstractProjectCommand
 {
-    protected $projectManager;
-
-    public function __construct($projectManager)
-    {
-      $this->projectManager = $projectManager;
-      parent::__construct();
-    }
-
     protected function configure()
     {
         $this
@@ -47,13 +39,10 @@ class EnableProjectCommand extends Command
         $projectName = $input->getArgument('project-name');
 
         if (!$input->isInteractive()) {
-            $this->getApplication();
-            if (!file_exists("{$this->installedPath}/projects/{$projectName}.project")) {
-                throw new \InvalidArgumentException("Project unknown: {$projectName}");
-            }
+            $projectName = $this->validateProject($projectName);
         }
 
-//        symlink("{$this->installedPath}/public/{$projectName}.devel", "../projects/{$projectName}.project");
+        $this->projectManager->enableProject($projectName);
 
         $output->writeln("Project <info>{$projectName}</info> enabled successfully.");
     }
@@ -64,22 +53,33 @@ class EnableProjectCommand extends Command
 
         $projectName = $input->getArgument('project-name');
         if (empty($projectName)) {
-            $installedPath = $this->installedPath;
-            $possibleProjects = array();
+            $possibleProjects = $this->getProjectManager()->getDisabledProjects();
+            if (empty($possibleProjects)) {
+                throw new \RuntimeException('No projects are ready to be enabled');
+            }
             $projectName = $this->getHelper('dialog')->askAndValidate(
                 $output,
-                '<info>Please enter the alias of the project:</info> ',
-                function ($answer) use ($installedPath) {
-                    if (!file_exists("{$this->installedPath}/projects/{$answer}.project")) {
-                        throw new \InvalidArgumentException("Project unknown: {$answer}");
-                    }
-                    return $answer;
-                },
+                '<info>Please enter the alias of the project to enable:</info> ',
+                array($this, 'validateProject'),
                 false,
                 null,
                 $possibleProjects
             );
             $input->setArgument('project-name', $projectName);
         }
+    }
+
+    public function validateProject($projectName)
+    {
+        $projectManager = $this->getProjectManager();
+        if (!$projectManager->hasProject($projectName)) {
+            throw new \InvalidArgumentException("Project not known: {$projectName}");
+        }
+
+        if ($projectManager->isProjectEnabled($projectName)) {
+            throw new \InvalidArgumentException("Project {$projectName} is enabled already");
+        }
+
+        return $projectName;
     }
 }

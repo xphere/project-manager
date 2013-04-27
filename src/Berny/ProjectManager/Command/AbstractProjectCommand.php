@@ -13,14 +13,12 @@ namespace Berny\ProjectManager\Command;
 
 use Berny\ProjectManager\Manager\ProjectManager;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\DialogHelper;
-use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractProjectCommand extends Command
 {
     protected $projectManager;
 
-    public function __construct($projectManager)
+    public function __construct(ProjectManager $projectManager)
     {
         parent::__construct();
         $this->projectManager = $projectManager;
