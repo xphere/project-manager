@@ -24,9 +24,6 @@ class ListProjectCommand extends AbstractProjectCommand
     {
         $this
             ->setName('project:list')
-            ->setAliases(array(
-                'list',
-            ))
             ->setDescription('List managed projects')
             ->addOption(
                 'type', 't',
