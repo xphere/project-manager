@@ -53,6 +53,11 @@ class ProjectManager
         }
     }
 
+    public function getPath($projectName)
+    {
+        return readlink($this->getProjectFilename($projectName));
+    }
+
     public function getProjects($callback = null)
     {
         /** @var $callback callable */

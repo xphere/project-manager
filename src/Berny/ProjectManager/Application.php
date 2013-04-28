@@ -30,6 +30,7 @@ class Application extends BaseApplication
             new Command\RemoveProjectCommand($projectManager),
             new Command\EnableProjectCommand($projectManager),
             new Command\DisableProjectCommand($projectManager),
+            new Command\ListProjectCommand($projectManager),
         ));
     }
 }
