@@ -23,6 +23,8 @@ class Application extends BaseApplication
     {
         parent::__construct(static::NAME, static::VERSION);
 
+        $this->getHelperSet()->set(new Command\Helper\DialogHelper());
+
         $this->addCommands(array(
             new Command\AddProjectCommand($projectManager),
             new Command\EnableProjectCommand($projectManager),

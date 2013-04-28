@@ -11,6 +11,7 @@
 
 namespace Berny\ProjectManager\Command;
 
+use Berny\ProjectManager\Command\Helper\DialogHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -49,6 +50,7 @@ class EnableProjectCommand extends AbstractProjectCommand
 
     protected function interact(InputInterface $input, OutputInterface $output)
     {
+        /** @var DialogHelper $dialog */
         $dialog = $this->getHelper('dialog');
 
         $projectName = $input->getArgument('project-name');
@@ -57,27 +59,28 @@ class EnableProjectCommand extends AbstractProjectCommand
             if (empty($possibleProjects)) {
                 throw new \RuntimeException('No projects are ready to be enabled');
             }
-            $projectName = $this->getHelper('dialog')->askAndValidate(
-                $output,
-                '<info>Please enter the alias of the project to enable:</info> ',
-                array($this, 'validateProject'),
-                false,
-                null,
-                $possibleProjects
-            );
+            $projectName = $dialog
+                ->question('Please enter the alias of the project to enable')
+                ->validateWith(array($this, 'validateProject'))
+                ->autocomplete($possibleProjects)
+                ->ask($output);
             $input->setArgument('project-name', $projectName);
         }
     }
 
     public function validateProject($projectName)
     {
+        if ($projectName === '') {
+            throw new \InvalidArgumentException("Project name can't be empty");
+        }
+
         $projectManager = $this->getProjectManager();
         if (!$projectManager->hasProject($projectName)) {
-            throw new \InvalidArgumentException("Project not known: {$projectName}");
+            throw new \InvalidArgumentException("Project '{$projectName}' not known");
         }
 
         if ($projectManager->isProjectEnabled($projectName)) {
-            throw new \InvalidArgumentException("Project {$projectName} is enabled already");
+            throw new \InvalidArgumentException("Project '{$projectName}' is enabled already");
         }
 
         return $projectName;

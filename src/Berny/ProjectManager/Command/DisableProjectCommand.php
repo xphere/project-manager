@@ -11,6 +11,7 @@
 
 namespace Berny\ProjectManager\Command;
 
+use Berny\ProjectManager\Command\Helper\DialogHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -49,35 +50,37 @@ class DisableProjectCommand extends AbstractProjectCommand
 
     protected function interact(InputInterface $input, OutputInterface $output)
     {
+        /** @var DialogHelper $dialog */
         $dialog = $this->getHelper('dialog');
 
         $projectName = $input->getArgument('project-name');
         if (empty($projectName)) {
             $possibleProjects = $this->getProjectManager()->getEnabledProjects();
             if (empty($possibleProjects)) {
-                throw new \RuntimeException('No projects are ready to be disabled');
+                throw new \RuntimeException('There are no enabled projects');
             }
-            $projectName = $this->getHelper('dialog')->askAndValidate(
-                $output,
-                '<info>Please enter the alias of the project to disable:</info> ',
-                array($this, 'validateProject'),
-                false,
-                null,
-                $possibleProjects
-            );
+            $projectName = $dialog
+                ->question('Please enter the alias of the project to disable')
+                ->validateWith(array($this, 'validateProject'))
+                ->autocomplete($possibleProjects)
+                ->ask($output);
             $input->setArgument('project-name', $projectName);
         }
     }
 
     public function validateProject($projectName)
     {
+        if ($projectName === '') {
+            throw new \InvalidArgumentException("Project name can't be empty");
+        }
+
         $projectManager = $this->getProjectManager();
         if (!$projectManager->hasProject($projectName)) {
-            throw new \InvalidArgumentException("Project not known: {$projectName}");
+            throw new \InvalidArgumentException("Project '{$projectName}' not known");
         }
 
         if ($projectManager->isProjectDisabled($projectName)) {
-            throw new \InvalidArgumentException("Project {$projectName} is disabled already");
+            throw new \InvalidArgumentException("Project '{$projectName}' is disabled already");
         }
 
         return $projectName;
