@@ -41,6 +41,7 @@ class ProjectManager
 
     public function getProjects($callback = null)
     {
+        /** @var $callback callable */
         $projects = array();
         /** @var $project \FilesystemIterator */
         foreach ($this->getProjectFiles() as $project) {
