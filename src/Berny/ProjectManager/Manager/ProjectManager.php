@@ -32,6 +32,13 @@ class ProjectManager
         }
     }
 
+    public function removeProject($projectName)
+    {
+        if (@unlink($this->getProjectFilename($projectName)) === false) {
+            throw new \RuntimeException("Can't remove project {$projectName}");
+        }
+    }
+
     public function enableProject($projectName)
     {
         if (@symlink($this->getEnabledProjectLink($projectName), $this->getEnabledProjectFilename($projectName)) === false) {
