@@ -12,17 +12,16 @@
     ServerAlias *.devel
 
     DocumentRoot /var/www/public
-    VirtualDocumentRoot /var/www/public/%-2+
+    VirtualDocumentRoot /var/www/public/%-1+
     php_admin_value auto_prepend_file /var/www/boot/docroot.php
+    UseCanonicalName Off
+    AcceptPathInfo On
 
     # combined log for all virtual hosts
     # can be split per-vhost based on the first field
     LogFormat "%V %h %l %u %t \"%r\" %s %b" vcommon
     CustomLog  /var/www/log/access.log vcommon
     ErrorLog   /var/www/log/errors.log
-
-    UseCanonicalName Off
-    AcceptPathInfo On
 
     <IfModule mod_rewrite.c>
         RewriteLog /var/www/log/rewrite.log
