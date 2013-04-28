@@ -39,14 +39,24 @@ class ProjectManager
         }
     }
 
+    public function disableProject($projectName)
+    {
+        if (@unlink($this->getEnabledProjectFilename($projectName)) === false) {
+            throw new \RuntimeException("Can't disable project {$projectName}");
+        }
+    }
+
     public function getProjects($callback = null)
     {
         /** @var $callback callable */
         $projects = array();
         /** @var $project \FilesystemIterator */
         foreach ($this->getProjectFiles() as $project) {
-            if ($project->isLink() && (!$callback || $callback($project) !== false)) {
-                $projects[] = $project->getBasename('.project');
+            if ($project->isLink()) {
+                $projectName = $project->getBasename('.project');
+                if (!$callback || $callback($projectName) !== false) {
+                    $projects[] = $projectName;
+                }
             }
         }
         return $projects;

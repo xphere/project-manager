@@ -26,6 +26,7 @@ class Application extends BaseApplication
         $this->addCommands(array(
             new Command\AddProjectCommand($projectManager),
             new Command\EnableProjectCommand($projectManager),
+            new Command\DisableProjectCommand($projectManager),
         ));
     }
 }
