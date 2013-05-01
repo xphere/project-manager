@@ -59,16 +59,12 @@ class EnableProjectCommand extends AbstractProjectCommand
             if (empty($possibleProjects)) {
                 throw new \RuntimeException('No projects are ready to be enabled');
             }
-            $projectName = $dialog
-                ->question('Please enter the alias of the project to enable')
-                ->validateWith(array($this, 'validateProject'))
-                ->autocomplete($possibleProjects)
-                ->ask($output);
-            $input->setArgument('project-name', $projectName);
+            $choice = $dialog->select($output, '<info>Please select the project you want to enable:</info>', $possibleProjects);
+            $input->setArgument('project-name', $possibleProjects[$choice]);
         }
     }
 
-    public function validateProject($projectName)
+    protected function validateProject($projectName)
     {
         if ($projectName === '') {
             throw new \InvalidArgumentException("Project name can't be empty");

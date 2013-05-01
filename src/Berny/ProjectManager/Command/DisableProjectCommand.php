@@ -59,12 +59,8 @@ class DisableProjectCommand extends AbstractProjectCommand
             if (empty($possibleProjects)) {
                 throw new \RuntimeException('There are no enabled projects');
             }
-            $projectName = $dialog
-                ->question('Please enter the alias of the project to disable')
-                ->validateWith(array($this, 'validateProject'))
-                ->autocomplete($possibleProjects)
-                ->ask($output);
-            $input->setArgument('project-name', $projectName);
+            $choice = $dialog->select($output, '<info>Please select the project you want to disable:</info>', $possibleProjects);
+            $input->setArgument('project-name', $possibleProjects[$choice]);
         }
     }
 

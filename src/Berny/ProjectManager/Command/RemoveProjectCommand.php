@@ -60,28 +60,20 @@ class RemoveProjectCommand extends AbstractProjectCommand
             if (empty($possibleProjects)) {
                 throw new \RuntimeException('No projects managed yet');
             }
-            $projectName = $dialog
-                ->question('Please enter the alias of the project to remove')
-                ->validateWith(array($this, 'validateName'))
-                ->autocomplete($possibleProjects)
-                ->ask($output);
-            $input->setArgument('project-name', $projectName);
+            $choice = $dialog->select($output, '<info>Please select the project you want to remove:</info>', $possibleProjects);
+            $input->setArgument('project-name', $possibleProjects[$choice]);
         }
     }
 
-    public function validateName($projectName)
+    protected function validateName($projectName)
     {
+        if ($projectName === '') {
+            throw new \InvalidArgumentException("Project name can't be empty");
+        }
+
         if (!$this->getProjectManager()->hasProject($projectName)) {
             throw new \InvalidArgumentException("Project '{$projectName}' does not exist");
         }
         return $projectName;
-    }
-
-    public function validatePath($projectPath)
-    {
-        if (!is_dir($projectPath)) {
-            throw new \InvalidArgumentException("The path '{$projectPath}' does not exist");
-        }
-        return $projectPath;
     }
 }
