@@ -3,13 +3,22 @@ Berny\Project-Manager
 
 Host multiple projects in your localhost and access them with urls like `http://project-name.devel/...`
 
+Download
+--------
+Use one of the following methods:
+- [git](https://git-scm.com): run `git clone https://github.com/xphere/project-manager`
+- [github](https://github.com/xphere/project-manager): download and extract [this file](https://github.com/xphere/project-manager/archive/master.zip)
+
+Except in the first case, you need to execute `composer install`
+
 Installation
 ------------
 1. Move the content of this project to /var/www
-2. Copy `config/devel.vhost` to your apache sites directory, often `/etc/apache2/sites-available/`
-3. Copy `config/devel.tld` to your dnsmasq config directory, usually `/etc/dnsmasq.d/`
-4. Restart apache and dnsmasq services
-5. Optionally, you can add `/var/www/bin` to your `$PATH` so you don't need to write the full path every time.
+2. Run `composer install`. You must have [composer](https://getcomposer.org/download/) installed.
+3. Copy `config/devel.vhost` to your apache sites directory, often `/etc/apache2/sites-available/`
+4. Copy `config/devel.tld` to your dnsmasq config directory, usually `/etc/dnsmasq.d/`
+5. Restart apache and dnsmasq services
+6. Optionally, you can add `/var/www/bin` to your `$PATH` so you don't need to write the full path every time.
 
         $> export PATH=$PATH:/var/www/bin
     Add the line below to your `~/.profile` if you want the change to be permanent.
